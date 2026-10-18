@@ -6,12 +6,12 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap; // Thread Safe HashMap for ID value retrieval
 
-public class DeviceServiceLayer {
-    private final RestTemplate restTemplate;
+public class DeviceServiceBusinessLogic {
+
     private Map<Integer, Device> devices = new ConcurrentHashMap<>();
 
-    public DeviceServiceLayer () {
-        this.restTemplate = new RestTemplate();
+    public DeviceServiceBusinessLogic() {
+
     }
 
     public Map<Integer, Device> getDevices () {

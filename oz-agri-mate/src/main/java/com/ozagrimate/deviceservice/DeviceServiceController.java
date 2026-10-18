@@ -1,7 +1,6 @@
 package com.ozagrimate.deviceservice;
 
 
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,21 +17,21 @@ import java.util.Map;
 @RequestMapping("/device-service")
 public class DeviceServiceController {
 
-    private DeviceServiceLayer deviceServiceLayer;
+    private DeviceServiceBusinessLogic deviceServiceBusinessLogic;
 
     public DeviceServiceController() {
-        this.deviceServiceLayer = new DeviceServiceLayer();
+        this.deviceServiceBusinessLogic = new DeviceServiceBusinessLogic();
     }
 
     @GetMapping ("/device")
     public ResponseEntity<Map<Integer, Device>> getAllDevices () {
-        return ResponseEntity.ok(this.deviceServiceLayer.getDevices());
+        return ResponseEntity.ok(this.deviceServiceBusinessLogic.getDevices());
     }
 
     @GetMapping ("/device/{deviceId}")
     public ResponseEntity<Device> getDeviceById (@PathVariable int deviceId) {
         try {
-            Device device = this.deviceServiceLayer.getDeviceById(deviceId);
+            Device device = this.deviceServiceBusinessLogic.getDeviceById(deviceId);
             return ResponseEntity.ok(device);
         }
         catch (DeviceNotFoundException e) {
@@ -42,13 +41,13 @@ public class DeviceServiceController {
 
     @PostMapping ("/device")
     public ResponseEntity<Device> registerDevice (@RequestBody DeviceRequest deviceRequest) {
-        Device device = this.deviceServiceLayer.registerDevice(deviceRequest);
+        Device device = this.deviceServiceBusinessLogic.registerDevice(deviceRequest);
         return ResponseEntity.ok(device);
     }
 
     @DeleteMapping ("/device/{deviceId}")
     public ResponseEntity<Void> deregisterDevice (@PathVariable int deviceId) {
-        if(this.deviceServiceLayer.deregisterDevice(deviceId)) {
+        if(this.deviceServiceBusinessLogic.deregisterDevice(deviceId)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
@@ -57,7 +56,7 @@ public class DeviceServiceController {
     @PutMapping("/device/{deviceId}")
     public ResponseEntity<Device> updateDevice (@PathVariable int deviceId, @RequestBody DeviceRequest deviceRequest) {
         try {
-            Device device = this.deviceServiceLayer.updateDeviceById(deviceId, deviceRequest);
+            Device device = this.deviceServiceBusinessLogic.updateDeviceById(deviceId, deviceRequest);
             return ResponseEntity.ok(device);
         }
         catch (DeviceNotFoundException e) {
