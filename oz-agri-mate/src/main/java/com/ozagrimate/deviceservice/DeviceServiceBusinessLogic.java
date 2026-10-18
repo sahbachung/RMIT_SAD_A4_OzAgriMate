@@ -1,8 +1,6 @@
 package com.ozagrimate.deviceservice;
 
 
-import org.springframework.web.client.RestTemplate;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap; // Thread Safe HashMap for ID value retrieval
 
@@ -10,9 +8,7 @@ public class DeviceServiceBusinessLogic {
 
     private Map<Integer, Device> devices = new ConcurrentHashMap<>();
 
-    public DeviceServiceBusinessLogic() {
-
-    }
+    public DeviceServiceBusinessLogic() {}
 
     public Map<Integer, Device> getDevices () {
         return this.devices;
