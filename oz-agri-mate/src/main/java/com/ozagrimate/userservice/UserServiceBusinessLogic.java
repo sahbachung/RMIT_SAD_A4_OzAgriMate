@@ -7,7 +7,19 @@ public class UserServiceBusinessLogic {
 
     private Map<String, User> users = new ConcurrentHashMap<>();
 
-    public UserServiceBusinessLogic () {}
+    public UserServiceBusinessLogic () {
+        this.createSystemUser();
+    }
+
+    private void createSystemUser() {
+        User sysUser = new User("sysuser");
+        sysUser.setUserType("system");
+        sysUser.setFirstName("System");
+        sysUser.setLastName("User");
+        sysUser.setUserActiveSW(true);
+        sysUser.setEmail("admin@ozagrimate.com.au");
+        this.users.put(sysUser.getUsername(), sysUser);
+    }
 
     public User getUser(String username) throws UsernameNotFoundException{
         User user = this.users.get(username);
