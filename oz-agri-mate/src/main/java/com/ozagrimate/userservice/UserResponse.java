@@ -13,6 +13,7 @@ public class UserResponse {
     private final String firstName;
     private final String lastName;
     private final String userType;
+    private final String userActiveSW;
 
     /**
      *
@@ -25,6 +26,7 @@ public class UserResponse {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.userType = user.getUserType();
+        this.userActiveSW = Boolean.toString(user.getUserActiveSW());
     }
 
 
@@ -51,4 +53,6 @@ public class UserResponse {
     public String getUserType() {
         return userType;
     }
+
+    public String getUserActiveSW() { return userActiveSW; }
 }
