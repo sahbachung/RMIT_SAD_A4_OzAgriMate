@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Map;
 
@@ -23,6 +24,7 @@ public class DeviceServiceController {
         this.deviceServiceBusinessLogic = new DeviceServiceBusinessLogic();
     }
 
+    // /device endpoint
     @GetMapping ("/device")
     public ResponseEntity<Map<Integer, Device>> getAllDevices () {
         return ResponseEntity.ok(this.deviceServiceBusinessLogic.getDevices());
@@ -60,6 +62,50 @@ public class DeviceServiceController {
             return ResponseEntity.ok(device);
         }
         catch (DeviceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // /maintenance
+
+    @GetMapping("/maintenance/{deviceId}")
+    //TODO This currently returns an empty body
+    public ResponseEntity<Map<Integer, MaintenanceEvent>> getDeviceHistory (@PathVariable int deviceId) {
+        try {
+            return ResponseEntity.ok(this.deviceServiceBusinessLogic.getDeviceMaintenanceLog(deviceId));
+        }
+        catch (DeviceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/maintenance")
+    public ResponseEntity<MaintenanceEvent> addMaintenanceEvent (@RequestBody MaintenanceEventRequest maintenanceEventRequest) {
+        try {
+            return ResponseEntity.ok(this.deviceServiceBusinessLogic.logMaintenanceEvent(maintenanceEventRequest));
+        }
+        catch (DeviceNotFoundException | HttpClientErrorException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/maintenance/{deviceId}/{maintenanceEventId}")
+    public ResponseEntity<Void> deleteMaintenanceEvent(@PathVariable int deviceId, @PathVariable int maintenanceEventId) {
+        try {
+            this.deviceServiceBusinessLogic.deleteMaintenanceEvent(deviceId, maintenanceEventId);
+            return ResponseEntity.noContent().build();
+        }
+        catch (DeviceNotFoundException | MaintenanceEventException e){
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/maintenance")
+    public ResponseEntity<MaintenanceEvent> updateMaintenanceEventComment(@RequestBody MaintenanceEventFieldCommentRequest commentRequest) {
+        try {
+            return ResponseEntity.ok(this.deviceServiceBusinessLogic.updateMaintenanceEventComment(commentRequest));
+        }
+        catch (DeviceNotFoundException | MaintenanceEventException e){
             return ResponseEntity.notFound().build();
         }
     }

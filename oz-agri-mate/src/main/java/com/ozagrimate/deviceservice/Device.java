@@ -1,12 +1,13 @@
 package com.ozagrimate.deviceservice;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger; //Thread safe ID counter
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Device {
     private static final AtomicInteger idCounter = new AtomicInteger(0);
-    private  static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final int deviceId;
 
     private String manufacturer;
@@ -74,19 +75,19 @@ public class Device {
         return this.nextMaintenanceDt;
     }
 
+    public void setNextMaintenanceDt (String nextMaintenanceDt) { this.nextMaintenanceDt = nextMaintenanceDt; }
+
     public String getLastMaintenanceDt () {
         return this.lastMaintenanceDt;
     }
 
-    public void performMaintenance (String maintDt) {
-        LocalDateTime parseDt = LocalDateTime.parse(maintDt, dateTimeFormatter);
-        this.lastMaintenanceDt = parseDt.format(dateTimeFormatter);
-        if (this.maintenanceFrequencyDays > 0 ) {
-            LocalDateTime nextDt = parseDt.plusDays(this.maintenanceFrequencyDays);
-            this.nextMaintenanceDt = nextDt.format(dateTimeFormatter);
-        }
-    }
+    public void setLastMaintenanceDt (String lastMaintenanceDt) { this.lastMaintenanceDt = lastMaintenanceDt; }
 
+    public void updateNextMaintenanceDt () {
+        LocalDateTime parseDt = LocalDateTime.parse(lastMaintenanceDt, dateTimeFormatter);
+        LocalDateTime nextDt = parseDt.plusDays(this.maintenanceFrequencyDays);
+        this.setNextMaintenanceDt(nextDt.format(dateTimeFormatter));
+    }
     public String toString() {
         return "Device {" +
                 "deviceId=" + this.getDeviceId() +
