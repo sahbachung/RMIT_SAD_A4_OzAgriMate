@@ -8,5 +8,10 @@
     "serviceName" : "user-service",
     "port" : "8081",
     "program" : "com.ozagrimate.userservice.UserServiceApplication"
+  },
+  {
+    "serviceName" : "inventory-service",
+    "port" : "8082",
+    "program" : "com.ozagrimate.inventoryservice.InventoryServiceApplication"
   }
 ]
