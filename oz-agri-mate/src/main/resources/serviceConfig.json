@@ -1,0 +1,12 @@
+[
+  {
+    "serviceName" : "device-service",
+    "port" : "8080",
+    "program" : "com.ozagrimate.deviceservice.DeviceServiceApplication"
+  },
+  {
+    "serviceName" : "user-service",
+    "port" : "8081",
+    "program" : "com.ozagrimate.userservice.UserServiceApplication"
+  }
+]
