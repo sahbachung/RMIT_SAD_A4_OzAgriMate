@@ -4,8 +4,6 @@ import com.ozagrimate.util.LoadServiceConfiguration;
 import com.ozagrimate.util.ServiceConfig;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-import com.ozagrimate.userservice.UserServiceApplication;
-import com.ozagrimate.deviceservice.DeviceServiceApplication;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
