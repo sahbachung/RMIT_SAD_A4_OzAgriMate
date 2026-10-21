@@ -101,35 +101,11 @@ public class DeviceServiceBusinessLogic {
         }
     }
 
-    public MaintenanceEvent logMaintenanceEvent(MaintenanceEventRequest maintenanceEventRequest) throws DeviceNotFoundException, ResponseStatusException, MaintenanceEventException {
+    public MaintenanceEvent logMaintenanceEvent(MaintenanceEventRequest maintenanceEventRequest) throws MaintenanceEventException, DeviceNotFoundException {
         // First, check if Username exists and is active
         // This template modified from one of the workshop solutions for PatientMonitoringSystem
-        ServiceConfig userService = null;
-        for (ServiceConfig service : LoadServiceConfiguration.loadServiceConfig()) {
-            if (service.getServiceName().equals("user-service")) {
-                userService = service;
-            }
-        }
-        if (userService==null) {
-            throw new ServiceNotFoundException("user-service");
-        }
-        String userEndpoint = "http://localhost:" + userService.getPort() + "/user-service/user/" + maintenanceEventRequest.getUsername();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Void> request = new HttpEntity<>(null, headers);
-        ResponseEntity<Map> response;
-        try {
-            response = restTemplate.exchange(userEndpoint, HttpMethod.GET, request, Map.class);
-            Map responseBody = response.getBody();
-            if (response.getStatusCode().is4xxClientError() || responseBody==null) {
-                throw new ResponseStatusException(response.getStatusCode());
-            }
-            else if (responseBody.get("userActiveSW")==null || responseBody.get("userActiveSW").equals("false")) {
-                throw new MaintenanceEventException("Username not active: " +  maintenanceEventRequest.getUsername());
-            }
-        }
-        catch (ResourceAccessException e) {
-            System.out.println("WARNING! User Service could not be reached, could not validate username and status");
+        if (!this.checkUsernameExistsAndActive(maintenanceEventRequest.getUsername())) {
+            throw new MaintenanceEventException("Username=" + maintenanceEventRequest.getUsername() + " doesn't exist or is inactive!");
         }
         // Username exists and is active
         // Now call internal service to retrieve device to check for existence
@@ -176,6 +152,38 @@ public class DeviceServiceBusinessLogic {
         MaintenanceEvent event = events.get(commentRequest.getMaintenanceEventId());
         event.setFieldComments(commentRequest.getFieldComments());
         return event;
+    }
+
+    private boolean checkUsernameExistsAndActive (String username) throws ServiceNotFoundException {
+        ServiceConfig userService = null;
+        for (ServiceConfig service : LoadServiceConfiguration.loadServiceConfig()) {
+            if (service.getServiceName().equals("user-service")) {
+                userService = service;
+            }
+        }
+        if (userService==null) {
+            throw new ServiceNotFoundException("user-service");
+        }
+        String userEndpoint = "http://localhost:" + userService.getPort() + "/user-service/user/" + username;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Void> request = new HttpEntity<>(null, headers);
+        ResponseEntity<Map> response;
+        try {
+            response = restTemplate.exchange(userEndpoint, HttpMethod.GET, request, Map.class);
+            Map responseBody = response.getBody();
+            if (response.getStatusCode().is4xxClientError() || responseBody==null) {
+                return false;
+            }
+            else if (responseBody.get("userActiveSW")==null || responseBody.get("userActiveSW").equals("false")) {
+                return false;
+            }
+        }
+        catch (ResourceAccessException e) {
+            System.out.println("WARNING! User Service could not be reached, could not validate username and status");
+            return true; // For now, assume that the username can be accepted even if it isn't validated, to maintain service continuity
+        }
+        return true;
     }
 
 }
