@@ -1,6 +1,6 @@
 package com.ozagrimate.deviceservice;
-
-
+import java.time.format.DateTimeParseException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,8 +43,13 @@ public class DeviceServiceController {
 
     @PostMapping ("/device")
     public ResponseEntity<Device> registerDevice (@RequestBody DeviceRequest deviceRequest) {
+    try {
         Device device = this.deviceServiceBusinessLogic.registerDevice(deviceRequest);
-        return ResponseEntity.ok(device);
+        return ResponseEntity.status(HttpStatus.CREATED).body(device);         // 201
+    }
+    catch (DateTimeParseException | NullPointerException e) {
+        return ResponseEntity.badRequest().build();                            // 400: bad or missing installDt
+    }
     }
 
     @DeleteMapping ("/device/{deviceId}")
@@ -57,13 +62,15 @@ public class DeviceServiceController {
 
     @PutMapping("/device/{deviceId}")
     public ResponseEntity<Device> updateDevice (@PathVariable int deviceId, @RequestBody DeviceRequest deviceRequest) {
-        try {
-            Device device = this.deviceServiceBusinessLogic.updateDeviceById(deviceId, deviceRequest);
-            return ResponseEntity.ok(device);
-        }
-        catch (DeviceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    try {
+        return ResponseEntity.ok(this.deviceServiceBusinessLogic.updateDeviceById(deviceId, deviceRequest));
+    }
+    catch (DeviceNotFoundException e) {
+        return ResponseEntity.notFound().build();                              // 404
+    }
+    catch (DateTimeParseException | NullPointerException e) {
+        return ResponseEntity.badRequest().build();                            // 400
+    }
     }
 
     // /maintenance
@@ -79,14 +86,18 @@ public class DeviceServiceController {
         }
     }
 
-    @PostMapping("/maintenance")
+   @PostMapping("/maintenance")
     public ResponseEntity<MaintenanceEvent> addMaintenanceEvent (@RequestBody MaintenanceEventRequest maintenanceEventRequest) {
-        try {
-            return ResponseEntity.ok(this.deviceServiceBusinessLogic.logMaintenanceEvent(maintenanceEventRequest));
-        }
-        catch (DeviceNotFoundException | HttpClientErrorException e) {
-            return ResponseEntity.notFound().build();
-        }
+    try {
+        MaintenanceEvent event = this.deviceServiceBusinessLogic.logMaintenanceEvent(maintenanceEventRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(event);          // 201: saved
+    }
+    catch (DeviceNotFoundException | HttpClientErrorException e) {
+        return ResponseEntity.notFound().build();                              // 404: no such device or user
+    }
+    catch (MaintenanceEventException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();            // 403: user is inactive
+    }
     }
 
     @DeleteMapping("/maintenance/{deviceId}/{maintenanceEventId}")
