@@ -1,16 +1,9 @@
 package com.ozagrimate.inventoryservice;
 
-import org.apache.coyote.Response;
+import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -18,9 +11,11 @@ import java.util.Map;
 @RequestMapping("/inventory-service")
 public class InventoryServiceController {
     private InventoryServiceBusinessLogic inventoryServiceBusinessLogic;
+    private OrderBusinessLogic orderBusinessLogic;
 
     public InventoryServiceController() {
         this.inventoryServiceBusinessLogic = new InventoryServiceBusinessLogic();
+        this.orderBusinessLogic = new OrderBusinessLogic();
     }
 
     @GetMapping("/inventory")
@@ -33,7 +28,7 @@ public class InventoryServiceController {
         try {
             return ResponseEntity.ok(this.inventoryServiceBusinessLogic.getInventoryItem(itemId));
         }
-        catch (InventoryItemNotFoundException e) {
+        catch (ItemNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -53,7 +48,7 @@ public class InventoryServiceController {
         try {
             return ResponseEntity.ok(this.inventoryServiceBusinessLogic.updateItemQuantity(itemId, itemRequest));
         }
-        catch (InventoryItemNotFoundException e) {
+        catch (ItemNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -64,8 +59,52 @@ public class InventoryServiceController {
             this.inventoryServiceBusinessLogic.deleteInventoryItem(itemId);
             return ResponseEntity.noContent().build();
         }
-        catch (InventoryItemNotFoundException e) {
+        catch (ItemNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/order")
+    public ResponseEntity<Map<Integer, Order>> getAllOrders(@RequestParam(required = false) Boolean ordered) {
+        return ResponseEntity.ok(this.orderBusinessLogic.getAllOrders(ordered));
+    }
+
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<Order> getOrderById(@PathVariable int orderId) {
+        try {
+            return ResponseEntity.ok(this.orderBusinessLogic.getOrder(orderId));
+        }
+        catch (OrderNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/order")
+    public ResponseEntity<Order> createOrder(@RequestBody OrderCreationRequest orderRequest) {
+        try {
+            return ResponseEntity.ok(this.orderBusinessLogic.createOrder(orderRequest));
+        }
+        catch (DuplicateItemException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
+    @PutMapping("/order/{orderId}")
+    public ResponseEntity<Order> updateOrder(@PathVariable int orderId, @RequestBody OrderUpdateRequest orderRequest) {
+        try {
+            return ResponseEntity.ok(this.orderBusinessLogic.updateOrderItems(orderId, orderRequest));
+        }
+        catch (OrderNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        catch (DuplicateItemException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
+    @DeleteMapping("/order/{orderId}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable int orderId) {
+        this.orderBusinessLogic.deleteOrder(orderId);
+        return ResponseEntity.ok().build();
     }
 }
