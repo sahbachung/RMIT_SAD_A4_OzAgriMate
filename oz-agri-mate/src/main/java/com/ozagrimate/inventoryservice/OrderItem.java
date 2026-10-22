@@ -34,6 +34,7 @@ public class OrderItem {
         this.quantity = quantity;
         this.unitOfMeasure = unitOfMeasure;
     }
+    public String getUnitOfMeasure() { return this.unitOfMeasure; }
 
     @Override
     public String toString() {
