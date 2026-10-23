@@ -88,6 +88,7 @@ public class Report {
         this.lastRunDttm = lastRunDttm;
     }
 
+    public String getCreationDttm() { return this.createDttm; }
 
     public boolean isTimeToRun() {
         if (this.status != Report.Status.PENDING) {
