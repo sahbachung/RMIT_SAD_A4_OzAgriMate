@@ -23,5 +23,10 @@
     "serviceName" : "reporting-service",
     "port" : "8084",
     "program" : "com.ozagrimate.reportingservice.ReportingServiceApplication"
+  },
+  {
+    "serviceName" : "scheduling-service",
+    "port" : "8085",
+    "program" : "com.ozagrimate.schedulingservice.SchedulingServiceApplication"
   }
 ]
