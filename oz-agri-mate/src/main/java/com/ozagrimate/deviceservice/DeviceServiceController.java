@@ -76,7 +76,6 @@ public class DeviceServiceController {
     // /maintenance
 
     @GetMapping("/maintenance/{deviceId}")
-    //TODO This currently returns an empty body
     public ResponseEntity<Map<Integer, MaintenanceEvent>> getDeviceHistory (@PathVariable int deviceId) {
         try {
             return ResponseEntity.ok(this.deviceServiceBusinessLogic.getDeviceMaintenanceLog(deviceId));

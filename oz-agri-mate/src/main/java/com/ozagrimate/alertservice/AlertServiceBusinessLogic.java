@@ -18,7 +18,7 @@ public class AlertServiceBusinessLogic {
     // Map<alertId, Alert>
     // Use ConcurrentHashMap to be thread safe
     private Map<Integer, Alert> alerts = new ConcurrentHashMap<>();
-    private int alertUpdateIntervalMins; // TODO not currently in scope for this assessment
+    private int alertUpdateIntervalMins;
 
     private final RestTemplate restTemplate;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
