@@ -18,5 +18,10 @@
     "serviceName" : "alert-service",
     "port" : "8083",
     "program" : "com.ozagrimate.alertservice.AlertServiceApplication"
+  },
+  {
+    "serviceName" : "reporting-service",
+    "port" : "8084",
+    "program" : "com.ozagrimate.reportingservice.ReportingServiceApplication"
   }
 ]

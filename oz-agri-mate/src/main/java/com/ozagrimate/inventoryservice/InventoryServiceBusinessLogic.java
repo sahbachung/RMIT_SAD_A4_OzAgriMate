@@ -33,10 +33,10 @@ public class InventoryServiceBusinessLogic {
         return this.inventory;
     }
 
-    public InventoryItem getInventoryItem(int itemId) throws InventoryItemNotFoundException{
+    public InventoryItem getInventoryItem(int itemId) throws ItemNotFoundException {
         InventoryItem item = this.inventory.get(itemId);
         if(item==null) {
-            throw new InventoryItemNotFoundException("itemId=" + itemId + " not found.");
+            throw new ItemNotFoundException("itemId=" + itemId + " not found.");
         }
         return item;
     }
@@ -59,7 +59,7 @@ public class InventoryServiceBusinessLogic {
         return item;
     }
 
-    public InventoryItem updateItemQuantity(int itemId, InventoryItemUpdateRequest itemRequest) throws InventoryItemNotFoundException {
+    public InventoryItem updateItemQuantity(int itemId, InventoryItemUpdateRequest itemRequest) throws ItemNotFoundException {
         InventoryItem item = this.getInventoryItem(itemId);
         item.setQuantity(itemRequest.getQuantity());
         item.setMinQuantity(itemRequest.getMinQuantity());
@@ -67,10 +67,10 @@ public class InventoryServiceBusinessLogic {
         return item;
     }
 
-    public void deleteInventoryItem(int itemId) throws InventoryItemNotFoundException {
+    public void deleteInventoryItem(int itemId) throws ItemNotFoundException {
         InventoryItem item = this.inventory.remove(itemId);
         if (item==null) {
-            throw new InventoryItemNotFoundException("itemId=" + itemId);
+            throw new ItemNotFoundException("itemId=" + itemId);
         }
     }
 }
