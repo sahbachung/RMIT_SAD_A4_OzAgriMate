@@ -45,6 +45,10 @@ public class InventoryServiceController {
 
     @PutMapping("/inventory/{itemId}")
     public ResponseEntity<InventoryItem> changeStock(@PathVariable int itemId, @RequestBody InventoryItemUpdateRequest itemRequest) {
+        // CHANGED: reject quantities that don't make sense with 400 Bad Request
+        if (itemRequest.getQuantity() < 0 || itemRequest.getMinQuantity() > itemRequest.getMaxQuantity()) {
+            return ResponseEntity.badRequest().build();
+        }
         try {
             return ResponseEntity.ok(this.inventoryServiceBusinessLogic.updateItemQuantity(itemId, itemRequest));
         }

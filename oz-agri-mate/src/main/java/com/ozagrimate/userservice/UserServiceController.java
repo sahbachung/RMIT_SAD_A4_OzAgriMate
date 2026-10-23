@@ -35,7 +35,7 @@ public class UserServiceController {
     public ResponseEntity<UserResponse> createUser (@RequestBody UserRequest userRequest) {
         try {
             User user = this.userServiceBusinessLogic.registerUser(userRequest);
-            return ResponseEntity.ok(user.generateUserResponseDTO());
+            return ResponseEntity.status(HttpStatus.CREATED).body(user.generateUserResponseDTO());   // CHANGED: 201 Created instead of 200 OK
         }
         catch (UsernameExistsException e) {
             // Return a 409 CONFLICT response if username exists
